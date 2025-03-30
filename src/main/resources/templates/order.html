@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>订单详情</title>
+    <title>Order Details</title>
     <meta charset="UTF-8">
 </head>
 <body>
-<h1>订单详情</h1>
+<h1>Order Details</h1>
 
 <table border="1">
     <thead>
     <tr>
-        <th>商品名称</th>
-        <th>规格</th>
-        <th>单价</th>
-        <th>数量</th>
-        <th>总价</th>
+        <th>Product Name</th>
+        <th>Specification</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Total Price</th>
     </tr>
     </thead>
     <tbody>
-    <!-- 遍历订单详情 -->
+    <!-- Iterate over order details -->
     <tr th:each="detail : ${orderDetails}">
         <td th:text="${detail.name}"></td>
         <td th:text="${detail.spec}"></td>
@@ -29,11 +29,11 @@
     </tbody>
 </table>
 
-<h3>总价: <span th:text="${orderTotalFee}"></span></h3>
+<h3>Total Price: <span th:text="${orderTotalFee}"></span></h3>
 
-<!-- 👇 返回首页按钮 -->
+<!-- 👇 Back to Home button -->
 <a href="/user/index">
-    <button>返回首页</button>
+    <button>Back to Home</button>
 </a>
 
 </body>

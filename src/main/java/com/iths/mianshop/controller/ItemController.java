@@ -26,7 +26,9 @@ public class ItemController {
     @GetMapping("/all")
     public List<Item> getAllItems() {
         System.out.println("查询所有商品");
-        return itemService.getAllItems();
+        List<Item> items = itemService.getAllItems();
+        System.out.println("商品数量: " + items.size()); // 打印返回的商品数量，检查是否有数据
+        return items;
     }
 
     @GetMapping("/search/{name}")

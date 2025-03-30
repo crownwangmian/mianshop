@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>订单管理</title>
+    <title>Order Management</title>
 </head>
 <body>
-<h1>订单管理</h1>
+<h1>Order Management</h1>
 
 <script>
     function updateOrderStatus(orderId, status) {
@@ -15,10 +15,10 @@
             }
         }).then(response => {
             if (response.ok) {
-                alert("✅ 订单状态已更新");
-                window.location.reload(); // 刷新页面
+                alert("✅ Order status updated");
+                window.location.reload(); // Refresh the page
             } else {
-                alert("❌ 更新失败");
+                alert("❌ Update failed");
             }
         });
     }
@@ -26,36 +26,36 @@
 
 <table border="1">
     <tr>
-        <th>订单号</th>
-        <th>总价</th>
-        <th>状态</th>
-        <th>操作</th>
-        <th>商品明细</th>
+        <th>Order ID</th>
+        <th>Total Price</th>
+        <th>Status</th>
+        <th>Actions</th>
+        <th>Product Details</th>
     </tr>
     <tr th:each="order : ${orders}">
         <td th:text="${order.id}"></td>
         <td th:text="${order.totalFee}"></td>
         <td>
             <select th:id="'status-' + ${order.id}" th:value="${order.status}">
-                <option value="0" th:selected="${order.status == 0}">未处理</option>
-                <option value="1" th:selected="${order.status == 1}">已处理</option>
+                <option value="0" th:selected="${order.status == 0}">Unprocessed</option>
+                <option value="1" th:selected="${order.status == 1}">Processed</option>
             </select>
         </td>
         <td>
             <button th:onclick="'updateOrderStatus(' + ${order.id} + ', document.getElementById(\'status-' + ${order.id} + '\').value)'">
-                更新
+                Update
             </button>
         </td>
         <td>
-            <!-- 展开商品详情 -->
+            <!-- Expand product details -->
             <details>
-                <summary>查看商品详情</summary>
+                <summary>View Product Details</summary>
                 <table border="1">
                     <tr>
-                        <th>商品名称</th>
-                        <th>规格</th>
-                        <th>数量</th>
-                        <th>单价</th>
+                        <th>Product Name</th>
+                        <th>Specification</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
                     </tr>
                     <tr th:each="detail : ${order.orderDetails}">
                         <td th:text="${detail.name}"></td>
@@ -68,10 +68,10 @@
         </td>
     </tr>
     <tr th:if="${#lists.isEmpty(orders)}">
-        <td colspan="5" style="text-align: center;">没有订单</td>
+        <td colspan="5" style="text-align: center;">No orders</td>
     </tr>
 </table>
 
-<a href="/admin/dashboard">返回管理首页</a>
+<a href="/admin/dashboard">Back to Admin Dashboard</a>
 </body>
 </html>

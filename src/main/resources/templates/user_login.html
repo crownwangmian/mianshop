@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>用户登录</title>
+    <title>User Login</title>
     <meta charset="UTF-8">
 </head>
 <body>
-<h2>用户登录</h2>
+<h2>User Login</h2>
 
-<!-- 显示错误提示 -->
+<!-- Display error message -->
 <div th:if="${errorMessage}" style="color: red;">
     <p th:text="${errorMessage}"></p>
 </div>
 
-<!-- 显示注册成功提示 -->
+<!-- Display registration success message -->
 <div th:if="${successMessage}" style="color: green;">
     <p th:text="${successMessage}"></p>
 </div>
 
 <form th:action="@{/user/login}" method="post">
     <div>
-        <label>用户名：</label>
+        <label>Username:</label>
         <input type="text" name="username" required>
     </div>
     <div>
-        <label>密码：</label>
+        <label>Password:</label>
         <input type="password" name="password" required>
     </div>
     <div>
-        <button type="submit">登录</button>
+        <button type="submit">Login</button>
     </div>
 </form>
 
-<!-- 链接到注册页面 -->
-<p>还没有账号？<a th:href="@{/user/register}">注册</a></p>
+<!-- Link to the registration page -->
+<p>Don't have an account? <a th:href="@{/user/register}">Register</a></p>
 
 </body>
 </html>

@@ -133,7 +133,7 @@ public class UserController {
 //    }
     @GetMapping("/index")
     public String userIndex(Model model) {
-        String username = "未登录"; // 默认用户名
+        String username = "Not Logged In"; // 默认用户名
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

@@ -54,6 +54,7 @@ public class SecurityConfig {
                                 "/user/register",
                                 "/user/index",
                                 "/admin/login",
+                                "/item/**",
                                 "/"
                         ).permitAll()
 
@@ -69,7 +70,6 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTool), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 
 
 }
