@@ -1,0 +1,51 @@
+<h1>购物车</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>商品名称</th>
+        <th>单价</th>
+        <th>数量</th>
+        <th>总价</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 遍历购物车商品 -->
+    <tr th:each="cartItem : ${cartList}">
+        <td th:text="${cartItem.item.name}"></td>
+        <td th:text="${cartItem.item.price}"></td>
+        <td>
+            <!-- 修改数量 -->
+            <form th:action="@{/cart/update/{id}(id=${cartItem.id})}" method="post">
+                <input type="number" name="quantity" th:value="${cartItem.quantity}" min="1" />
+                <button type="submit">修改</button>
+            </form>
+        </td>
+        <td th:text="${cartItem.item.price * cartItem.quantity}"></td>
+        <td>
+            <!-- 删除商品 -->
+            <form th:action="@{/cart/remove/{id}(id=${cartItem.id})}" method="post">
+                <button type="submit">删除</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<!-- 总价 -->
+<p>总价: <span th:text="${totalPrice}"></span></p>
+
+<!-- 继续购物 -->
+<a href="/user/index">
+    <button>继续购物</button>
+</a>
+
+<!-- 清空购物车 -->
+<form th:action="@{/cart/clear}" method="post">
+    <button type="submit">清空购物车</button>
+</form>
+
+<form th:action="@{/order/create}" method="post">
+    <button type="submit">生成订单</button>
+</form>

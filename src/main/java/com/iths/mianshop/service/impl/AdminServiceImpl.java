@@ -5,6 +5,10 @@ import com.iths.mianshop.repository.AdminRepository;
 import com.iths.mianshop.service.AdminService;
 import com.iths.mianshop.utils.JwtTool;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +49,13 @@ public class AdminServiceImpl  implements AdminService{
             Map<String, Object> claims = new HashMap<>();
             claims.put("username", admin.getUsername());
             claims.put("id", admin.getId());
+            claims.put("userType", "ADMIN"); // 👈 新增这一行
             claims.put("roles", List.of("ROLE_ADMIN")); // 角色直接写成 ROLE_ADMIN
+            String principal = admin.getUsername() + "|ADMIN";
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    principal, null, List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
             // 生成 token
             return jwtTool.generateToken(admin.getUsername(), claims);

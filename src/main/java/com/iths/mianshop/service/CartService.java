@@ -10,4 +10,11 @@ public interface CartService {
     List<Cart> getCartByUserId(Integer userId);
 
     String removeFromCart(Integer cartId);
+
+    // 🔥 新增
+    String updateCartQuantity(Integer cartId, Integer quantity);
+
+    // 🔥 新增
+    void clearCart(Integer userId);
+
 }

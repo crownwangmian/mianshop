@@ -5,13 +5,14 @@ import com.iths.mianshop.config.JwtProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
+@Slf4j
 @Component
 public class JwtTool {
 
@@ -24,9 +25,10 @@ public class JwtTool {
     }
 
     public String generateToken(String subject, Map<String, Object> claims) {
-
+        if (subject == null || subject.isEmpty()) {
+            throw new IllegalArgumentException("Subject (username) cannot be null or empty");
+        }
         long expiration = jwtProperties.getTokenTTL().toMillis();
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(subject)
@@ -38,9 +40,16 @@ public class JwtTool {
 
 
     public Claims parseToken(String token) {
-        return Jwts.parser().setSigningKey(keyPair.getPublic())
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser().setSigningKey(keyPair.getPublic())
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
+            log.error("解析 JWT 失败: {}", e.getMessage());
+            throw new RuntimeException("JWT 解析失败", e);
+
+        }
+
     }
 
     public boolean validateToken(String token) {

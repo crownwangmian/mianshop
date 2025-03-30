@@ -48,23 +48,28 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 登录和其他公共接口
-                        .requestMatchers("/users/login").permitAll()
-                        .requestMatchers("/search/**").permitAll()
-                        .requestMatchers("/admin/register").permitAll()
-                        .requestMatchers("/admin/login").permitAll()
+                        // ✅ 允许匿名访问的路径
+                        .requestMatchers(
+                                "/user/login",
+                                "/user/register",
+                                "/user/index",
+                                "/admin/login",
+                                "/"
+                        ).permitAll()
 
-                        // 用户接口 -> 需要 USER 或 ADMIN 角色
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        // ✅ 用户接口 -> 需要 USER 或 ADMIN 角色
+                        .requestMatchers("/user/**").hasAuthority("ROLE_USER")
 
-                        // 管理接口 -> 需要 ADMIN 角色
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        // ✅ 管理接口 -> 需要 ADMIN 角色
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
 
-                        // 其他请求都需要认证
+                        // ✅ 其他请求都需要认证
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTool), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
+
+
 
 }

@@ -2,24 +2,54 @@ package com.iths.mianshop.pojo;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
-@Table(name = "`order`") // `order` 是关键字，注意用反引号
+@Table(name = "`order`")
 public class Order {
-    public Order() {
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    public Order(Integer id, Integer totalFee, User user, Item item, Integer quantity, Integer status) {
-        this.id = id;
+    @Column(name = "total_fee", nullable = false)
+    private Integer totalFee;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // ✅ 关联 OrderDetail（订单明细）
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderDetail> orderDetails;
+
+    @Column(name = "status", nullable = false)
+    private Integer status;
+
+    @Column(name = "create_time", nullable = false, updatable = false)
+    private LocalDateTime createTime;
+
+    // 👉 无参构造器（JPA 必须）
+    public Order() {}
+
+    // 👉 带参构造器（用于创建订单）
+    public Order(Integer totalFee, User user, Integer status) {
         this.totalFee = totalFee;
         this.user = user;
-        this.item = item;
-        this.quantity = quantity;
         this.status = status;
+        this.createTime = LocalDateTime.now();
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 
     public void setId(Integer id) {
@@ -42,22 +72,6 @@ public class Order {
         this.user = user;
     }
 
-    public Item getItem() {
-        return item;
-    }
-
-    public void setItem(Item item) {
-        this.item = item;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public Integer getStatus() {
         return status;
     }
@@ -66,25 +80,12 @@ public class Order {
         this.status = status;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
 
-    @Column(name = "total_fee", nullable = false)
-    private Integer totalFee;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
-
-    @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
-    private Integer status; // 0 = 未处理, 1 = 已完成, 2 = 已取消
+    public void setCreateTime(LocalDateTime createTime) {
+        this.createTime = createTime;
+    }
 
 }

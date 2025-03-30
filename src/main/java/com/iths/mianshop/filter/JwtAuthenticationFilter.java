@@ -4,9 +4,11 @@ import com.iths.mianshop.utils.JwtTool;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,44 +31,59 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        // 1. 从请求头中获取 token
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
-        } else {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        try {
-            // 2. 解析 token
-            Claims claims = jwtTool.parseToken(token);
-            if (claims != null) {
-                String username = claims.getSubject();
-
-                // 👇 提取角色信息
-                List<String> roles = claims.get("roles", List.class);
-                if (roles == null) {
-                    roles = new ArrayList<>();
+        // ✅ 1. 从 Cookie 中获取 token
+        String token = null;
+        Cookie[] cookies = request.getCookies(); // 从 Cookie 中读取
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("Authorization".equals(cookie.getName())) { // 匹配名为 Authorization 的 Cookie
+                    token = cookie.getValue();
+                    break;
                 }
-                List<GrantedAuthority> authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-                // 创建认证对象，带上权限
-                // 直接创建认证对象，不需要 password
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(username, null, authorities);
-
-                // 👇 将认证对象存储到 SecurityContext
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception e) {
-            logger.warn("Token 解析失败：" + e.getMessage());
         }
 
-        // 5. 继续处理下一个过滤器
+        if (token != null) {
+            try {
+                Claims claims = jwtTool.parseToken(token);
+                if (claims != null) {
+                    String username = claims.getSubject();
+
+                    // 日志输出，方便排查问题
+                    if (username == null) {
+                        logger.warn("解析出的用户名为空");
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
+
+                    logger.info("解析出的用户名: " + username);
+
+                    // 👇 提取角色信息
+                    List<String> roles = claims.get("roles", List.class);
+                    logger.info("解析出的用户名: " + roles);
+                    if (roles == null) {
+                        roles = new ArrayList<>();
+                    }
+                    List<GrantedAuthority> authorities = roles.stream()
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
+                    String userType = claims.get("userType", String.class); // 👈 取出 userType
+
+// 用 username + userType 拼成唯一标识，比如 "mianwang|ADMIN"
+                    String principal = username + "|" + userType;
+
+                    // 👇 创建认证对象，存入 SecurityContext
+                    Authentication authentication =
+                            new UsernamePasswordAuthenticationToken(principal, null, authorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception e) {
+                logger.warn("Token 解析失败：" + e.getMessage());
+            }
+        }
+
+
+        // ✅ 6. 继续处理下一个过滤器
         filterChain.doFilter(request, response);
     }
-
 }

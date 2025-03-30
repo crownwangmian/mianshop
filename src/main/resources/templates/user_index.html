@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>商品列表</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-container button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn-container button:hover {
+            background-color: #45a049;
+        }
+
+        .add-to-cart-btn {
+            padding: 5px 10px;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #007bb5;
+        }
+    </style>
+</head>
+<body>
+
+<!-- ✅ 顶部导航 -->
+<div class="header">
+    <h1>商品列表</h1>
+    <div class="btn-container">
+        <!-- ✅ 显示用户名或未登录 -->
+        <div th:if="${username != '未登录'}" style="margin-right: 20px;">
+            👋 欢迎, <span th:text="${username}"></span>
+            <!-- ✅ 新增登出按钮 -->
+            <a href="/">退出</a>
+        </div>
+
+        <div th:if="${username == '未登录'}" style="margin-right: 20px;">
+            未登录
+        </div>
+
+        <!-- ✅ 注册按钮 -->
+        <a href="/user/register">
+            <button>注册</button>
+        </a>
+        <!-- ✅ 登录按钮 -->
+        <a href="/user/login">
+            <button>登录</button>
+        </a>
+        <!-- ✅ 查看购物车按钮 -->
+        <a href="/cart/view">
+            <button>查看购物车</button>
+        </a>
+    </div>
+</div>
+
+<!-- ✅ 商品表格 -->
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>名称</th>
+        <th>品牌</th>
+        <th>类别</th>
+        <th>价格</th>
+        <th>库存</th>
+        <th>图片</th>
+        <th>规格</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody id="item-table-body">
+    <!-- ✅ 使用 JavaScript 异步加载商品数据 -->
+    </tbody>
+</table>
+
+<!-- ✅ JS 代码 -->
+<script>
+    // 🔥 异步加载商品数据
+    async function loadItems() {
+        try {
+            const response = await fetch('/item/all'); // 异步请求
+            if (!response.ok) throw new Error('加载失败');
+            const items = await response.json();
+
+            const tableBody = document.getElementById('item-table-body');
+            tableBody.innerHTML = ''; // 清空之前的数据
+
+            items.forEach(item => {
+                const row = `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.name}</td>
+                        <td>${item.brand || '-'}</td>
+                        <td>${item.category || '-'}</td>
+                        <td>${item.price || '-'}</td>
+                        <td>${item.stock || '-'}</td>
+                        <td>
+                            <img src="${item.image || ''}" alt="商品图片" width="100" height="100"/>
+                        </td>
+                        <td>${item.specification ? formatSpecification(item.specification) : '-'}</td>
+                        <td>
+                            <button class="add-to-cart-btn" onclick="addToCart(${item.id})">加入购物车</button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error('加载商品失败:', error);
+        }
+    }
+
+    // 🔥 格式化规格信息
+    function formatSpecification(specification) {
+        try {
+            const specObj = JSON.parse(specification);
+            return Object.entries(specObj)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('<br/>');
+        } catch (error) {
+            return specification || '-';
+        }
+    }
+
+    // 加入购物车功能
+    async function addToCart(itemId) {
+        try {
+            const params = new URLSearchParams();
+            params.append('itemId', itemId);
+            params.append('quantity', 1); // 默认数量为 1
+
+            const response = await fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: params.toString()
+            });
+
+            if (response.ok) {
+                alert('✅ 商品已成功加入购物车！');
+                window.location.href = '/cart/view'; // 跳转到购物车页面
+            } else {
+                const errorText = await response.text();
+                alert(`❌ 加入购物车失败: ${errorText}`);
+            }
+        } catch (error) {
+            console.error('加入购物车失败:', error);
+            alert('❌ 加入购物车失败，请稍后再试！');
+        }
+    }
+
+
+    // ✅ 页面加载时自动调用
+    window.onload = loadItems;
+</script>
+
+</body>
+</html>

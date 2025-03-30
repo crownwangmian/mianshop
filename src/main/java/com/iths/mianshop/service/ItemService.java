@@ -10,4 +10,8 @@ public interface ItemService {
     List<Item> getItemsByCategory(String category);
 
     String addItem(Item item);
+
+    List<Item> getItemsByName(String name); // 🔥 新增方法
+
+    Item getItemById(Integer id);
 }

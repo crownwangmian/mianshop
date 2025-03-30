@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Integer> {
     List<Cart> findByUserId(Integer userId);
+
+    // 查询当前用户购物车中是否存在相同商品
+    Cart findByUserIdAndItemId(Integer userId, Integer itemId);
+
 }

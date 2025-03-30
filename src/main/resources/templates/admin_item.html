@@ -1,0 +1,19 @@
+<h1>添加新商品</h1>
+<form th:action="@{/admin/item/add}" method="post">
+    <label>商品名称: </label>
+    <input type="text" name="name" required />
+
+    <label>价格: </label>
+    <input type="number" name="price" required />
+
+    <label>库存: </label>
+    <input type="number" name="stock" required />
+
+    <label>类别: </label>
+    <input type="text" name="category" required />
+
+    <label>brand: </label>
+    <input type="text" name="brand" required />
+
+    <button type="submit">添加商品</button>
+</form>

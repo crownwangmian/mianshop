@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>订单详情</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+<h1>订单详情</h1>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>商品名称</th>
+        <th>规格</th>
+        <th>单价</th>
+        <th>数量</th>
+        <th>总价</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 遍历订单详情 -->
+    <tr th:each="detail : ${orderDetails}">
+        <td th:text="${detail.name}"></td>
+        <td th:text="${detail.spec}"></td>
+        <td th:text="${detail.price}"></td>
+        <td th:text="${detail.quantity}"></td>
+        <td th:text="${detail.price * detail.quantity}"></td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>总价: <span th:text="${orderTotalFee}"></span></h3>
+
+<!-- 👇 返回首页按钮 -->
+<a href="/user/index">
+    <button>返回首页</button>
+</a>
+
+</body>
+</html>

@@ -6,12 +6,27 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "item")
-
-
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private Integer price;
+
+    @Column(nullable = false)
+    private Integer stock;
+
+    private String image;
+
+    private String category;
+
+    private String brand;
+
+    private String specification;
 
     public Item() {
     }
@@ -91,21 +106,6 @@ public class Item {
         this.specification = specification;
     }
 
-    @Column(nullable = false)
-    private String name;
 
-    @Column(nullable = false)
-    private Integer price;
-
-    @Column(nullable = false)
-    private Integer stock;
-
-    private String image;
-
-    private String category;
-
-    private String brand;
-
-    private String specification;
 
 }
